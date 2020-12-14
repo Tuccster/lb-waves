@@ -13,7 +13,8 @@ namespace Lemon
         private float health = 100.0f;
 
         [Header("Resources")]
-        public TextMeshPro username;
+        public GameObject playerUI;
+        public GameObject[] playerModelElements;
         //public PhotonTransformViewClassic photonTransformView;
         public Rigidbody playerRigidbody;
         public MonoBehaviour[] localOnlyScripts;
@@ -30,7 +31,7 @@ namespace Lemon
 
         private void Start()
         {
-            username.text = photonView.Owner.NickName;
+            //username.text = photonView.Owner.NickName;
             if (!photonView.IsMine && PhotonNetwork.IsConnected)
             {
                 for (int i = 0; i < localOnlyScripts.Length; i++)
@@ -38,6 +39,13 @@ namespace Lemon
 
                 for (int i = 0; i < localOnlyGameObjects.Length; i++)
                     localOnlyGameObjects[i].SetActive(false);
+
+                Instantiate(playerUI).GetComponent<NonLocalPlayerInfo>().SetTarget(photonView.Owner.NickName, transform);
+            }
+            else
+            {
+                for (int i = 0; i < playerModelElements.Length; i++)
+                    playerModelElements[i].SetActive(false);
             }
         }
 
