@@ -12,7 +12,8 @@ namespace Lemon
         // This should be moved to a more general game information class
         private static string gameVersion = "20w50b";
 
-        public Text networkStatus;
+        public Button connectButton;
+        public Text connectButtonText;
 
         private void Awake()
         {
@@ -21,6 +22,10 @@ namespace Lemon
 
         public void Connect()
         {
+            Debug.Log("Attempting to connect...");
+            connectButton.interactable = false;
+            connectButtonText.text = "CONNECTING...";
+
             if (PhotonNetwork.IsConnected)
             {
                 PhotonNetwork.JoinRandomRoom();
@@ -34,20 +39,16 @@ namespace Lemon
 
         public override void OnConnectedToMaster()
 		{
-            networkStatus.text = "Status: Connected to master";
             PhotonNetwork.JoinRandomRoom();
 		}
 
         public override void OnJoinRandomFailed(short returnCode, string message)
         {   
-            networkStatus.text = "Status: Unable to join room";
             PhotonNetwork.CreateRoom(null, new RoomOptions());
         }
 
         public override void OnJoinedRoom()
         {
-            networkStatus.text = "Status: Joined room";
-
             if (PhotonNetwork.IsMasterClient)
                 PhotonNetwork.LoadLevel(1);
         }
