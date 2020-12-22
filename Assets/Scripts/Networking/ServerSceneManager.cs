@@ -14,7 +14,7 @@ namespace Lemon
         public Text masterClient;
         public GameObject prefabPlayer;
 
-        private void Start()
+        private void Awake()
         {
             masterClient.text = "master_client : " + PhotonNetwork.IsMasterClient + "\napp_id : " + Application.identifier;
 

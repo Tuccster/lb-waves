@@ -17,7 +17,6 @@ namespace Lemon
         public Rigidbody playerRigidbody;
 
         [Space(10)]
-        public MonoBehaviour[] playerModelElements;
         public MonoBehaviour[] localOnlyScripts;
         public GameObject[] localOnlyGameObjects;
 
@@ -32,7 +31,6 @@ namespace Lemon
 
         private void Start()
         {
-            //username.text = photonView.Owner.NickName;
             if (!photonView.IsMine && PhotonNetwork.IsConnected)
             {
                 transform.name = "player_nonlocal";
@@ -48,9 +46,6 @@ namespace Lemon
             else
             {
                 transform.name = "player_local";
-
-                for (int i = 0; i < playerModelElements.Length; i++)
-                    playerModelElements[i].enabled = false; //SHOULD BE false
             }
         }
 
