@@ -13,6 +13,8 @@ public class NonLocalPlayerInfo : MonoBehaviour
 
     private Camera localPlayerCamera;
     private Transform targetTransform;
+    
+    private Vector3 screenPoint;
 
     private void Awake()
     {
@@ -21,7 +23,10 @@ public class NonLocalPlayerInfo : MonoBehaviour
 
     private void Update()
     {
+        screenPoint = localPlayerCamera.WorldToScreenPoint(targetTransform.position + offset);
         usernameDisplay.rectTransform.position = localPlayerCamera.WorldToScreenPoint(targetTransform.position + offset);
+
+        if (targetTransform == null) Destroy(gameObject);
     }
 
     public void SetTarget(string _targetUsername, Transform _targetTransform)
@@ -33,5 +38,6 @@ public class NonLocalPlayerInfo : MonoBehaviour
     private void OnGUI()
     {
         GUI.Label(new Rect(10, 64, 512, 32), $"targetTransform.position -> {targetTransform.position}");
+        GUI.Label(new Rect(10, 64+32, 512, 32), $"targetTransform.position within frustum -> {Lemon.Maths.PointInCameraFrustum(localPlayerCamera, targetTransform.position)}");
     }
 }
