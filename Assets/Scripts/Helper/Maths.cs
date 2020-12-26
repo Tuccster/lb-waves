@@ -6,6 +6,7 @@ namespace Lemon
 {
     public static class Maths
     {
+        
         public static bool PointInCameraFrustum(Camera camera, Vector3 point)
         {
             Vector3 vp = camera.WorldToScreenPoint(point);

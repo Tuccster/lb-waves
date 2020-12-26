@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Lemon.Attributes;
 
 namespace Lemon
 {
@@ -12,6 +13,7 @@ namespace Lemon
 
         [Header("Resources")]
         public Text usernameDisplay;
+        public Image healthBar;
 
         private Camera localPlayerCamera;
         private Transform targetTransform;
@@ -34,15 +36,23 @@ namespace Lemon
             if (targetTransform == null) Destroy(gameObject);
         }
 
+        private void OnDestroy()
+        {
+            targetTransform.GetComponent<HealthAttribute>().HealthChanged -= OnHealthChanged;
+        }
+
         public void SetTarget(string _targetUsername, Transform _targetTransform)
         {
             usernameDisplay.text = _targetUsername;
             targetTransform = _targetTransform;
+
+            targetTransform.GetComponent<HealthAttribute>().HealthChanged += OnHealthChanged;
         }
 
-        private void OnGUI()
+        // Subscribed to the target player's HealthChanged event in order to update health bar when the player's health changes
+        public void OnHealthChanged(HealthAttribute source, HealthDeltaEventArgs e)
         {
-            GUI.Label(new Rect(10, 64, 512, 32), $"targetTransform.position -> {targetTransform.position}");
+            healthBar.fillAmount = e.Health / source.m_maxHealth;
         }
     }
 }
