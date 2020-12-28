@@ -60,7 +60,7 @@ namespace Lemon
                 else
                 {
                     // Receive order -> 0
-                    m_BodyTrans.rotation = Quaternion.Euler(0, (float)stream.ReceiveNext(), 0);
+                    m_BodyTrans.rotation = Quaternion.Euler(0, (float)stream.ReceiveNext(), 0); // <= Doesn't work
                     // Receive order -> 1
                     this.m_LookDir = (Vector3)stream.ReceiveNext();
                     m_FaceTrans.forward = m_LookDir;

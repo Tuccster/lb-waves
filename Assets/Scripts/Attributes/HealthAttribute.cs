@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Photon.Pun;
 
 namespace Lemon.Attributes
 {
@@ -10,9 +11,10 @@ namespace Lemon.Attributes
         public float Delta { get; set; }
     }
 
-    public class HealthAttribute : MonoBehaviour
+    public class HealthAttribute : MonoBehaviourPunCallbacks, IPunObservable
     {
         [Header("Settings")]
+        public bool m_SyncOnNetwork;
         public float m_Health;
         public float m_MaxHealth;
 
@@ -54,6 +56,30 @@ namespace Lemon.Attributes
                 HealthChanged.Invoke(this, new HealthDeltaEventArgs { Health = health, MaxHealth = m_MaxHealth, Delta = delta });
             if (m_LogOnHealthChanged)
                 Debug.Log($"name:{transform.name} | instance_id:{transform.GetInstanceID()} | health:{health} | delta:{delta}");
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (!m_SyncOnNetwork) return;
+
+            try
+            {
+                // Sync the health across the network
+                if (stream.IsWriting)
+                {
+                    // Send order -> 0
+                    stream.SendNext(m_Health);
+                }
+                else
+                {
+                    // Receive order -> 0
+                    m_Health = (float)stream.ReceiveNext();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+            }
         }
     }
 }
