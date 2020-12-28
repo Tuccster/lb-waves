@@ -12,47 +12,50 @@ namespace Lemon
         public Vector3 offset;
 
         [Header("Resources")]
-        public Text usernameDisplay;
-        public Image healthBar;
+        public RectTransform m_InfoContainer;
+        public Text m_UsernameDisplay;
+        public Image m_HealthDisplay;
 
-        private Camera localPlayerCamera;
-        private Transform targetTransform;
+        private Camera m_LocalPlayerCamera;
+        private Transform m_Target;
 
 
-        private void Awake()
+        private void Start()
         {
-            localPlayerCamera = Camera.main;
+            m_LocalPlayerCamera = Camera.main;
         }
 
         private void Update()
         {
             // Check if username position is onscreen; if not hold it still offscreen
-            if (Maths.PointInCameraFrustum(localPlayerCamera, targetTransform.position + offset))
-                usernameDisplay.rectTransform.position = localPlayerCamera.WorldToScreenPoint(targetTransform.position + offset);
+            if (Maths.PointInCameraFrustum(m_LocalPlayerCamera, m_Target.position + offset) && m_Target != null)
+                m_InfoContainer.position = m_LocalPlayerCamera.WorldToScreenPoint(m_Target.position + offset);
             else
-                usernameDisplay.rectTransform.position = new Vector3(-1000, -1000, 0);
+                m_InfoContainer.position = new Vector3(-1000, -1000, 0);
 
 
-            if (targetTransform == null) Destroy(gameObject);
+            if (m_Target == null) Destroy(gameObject);
         }
 
         private void OnDestroy()
         {
-            targetTransform.GetComponent<HealthAttribute>().HealthChanged -= OnHealthChanged;
+            m_Target.GetComponent<HealthAttribute>().HealthChanged -= OnHealthChanged;
         }
 
-        public void SetTarget(string _targetUsername, Transform _targetTransform)
+        public void SetTarget(string targetUsername, Transform targetTransform)
         {
-            usernameDisplay.text = _targetUsername;
-            targetTransform = _targetTransform;
+            m_UsernameDisplay.text = targetUsername;
+            m_Target = targetTransform;
 
-            targetTransform.GetComponent<HealthAttribute>().HealthChanged += OnHealthChanged;
+            HealthAttribute healthAtt = m_Target.GetComponent<HealthAttribute>();
+            healthAtt.HealthChanged += OnHealthChanged;
+            healthAtt.ApplyHealthDelta(0); // <= Used to force event call
         }
 
         // Subscribed to the target player's HealthChanged event in order to update health bar when the player's health changes
         public void OnHealthChanged(HealthAttribute source, HealthDeltaEventArgs e)
         {
-            healthBar.fillAmount = e.Health / source.m_maxHealth;
+            m_HealthDisplay.fillAmount = e.Health / e.MaxHealth;
         }
     }
 }

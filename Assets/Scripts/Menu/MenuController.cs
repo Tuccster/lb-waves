@@ -10,6 +10,8 @@ public class MenuController : MonoBehaviour
 
     private void Start()
     {
-        version.text = $"Version {Application.version} running {Application.unityVersion}";
+        string buildID = Application.buildGUID;
+        string shortBuildID = buildID.Substring(Mathf.Max(0, buildID.Length - 6));
+        version.text = $"Version {Application.version} running {Application.unityVersion} (...{shortBuildID})";
     }
 }

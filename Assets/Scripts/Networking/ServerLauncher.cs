@@ -32,8 +32,8 @@ namespace Lemon
             }
             else
             {
-                PhotonNetwork.ConnectUsingSettings();
                 PhotonNetwork.GameVersion = gameVersion;
+                PhotonNetwork.ConnectUsingSettings();
             }
         }
 

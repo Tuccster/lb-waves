@@ -6,13 +6,19 @@ namespace Lemon.Attributes
     public class HealthDeltaEventArgs : EventArgs
     {
         public float Health { get; set; }
+        public float MaxHealth { get; set; }
         public float Delta { get; set; }
     }
 
     public class HealthAttribute : MonoBehaviour
     {
-        public float m_health;
-        public float m_maxHealth;
+        [Header("Settings")]
+        public float m_Health;
+        public float m_MaxHealth;
+
+        [Space(10)]
+        public bool m_LogOnHealthChanged = false;
+        public bool m_LogOnHealthDepleted = false;
 
         public delegate void HealthChangedEventHandler(HealthAttribute sender, HealthDeltaEventArgs args);
         public event HealthChangedEventHandler HealthChanged;
@@ -21,28 +27,33 @@ namespace Lemon.Attributes
 
         private void Awake()
         {
-            m_health = Mathf.Clamp(m_health, 0, m_maxHealth);
+            m_Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
+            ApplyHealthDelta(0);
         }
 
         public void ApplyHealthDelta(float delta)
         {
-            m_health = Mathf.Clamp(m_health + delta, 0, m_maxHealth);
+            m_Health = Mathf.Clamp(m_Health + delta, 0, m_MaxHealth);
 
-            if (m_health == 0) OnHealthDepleted();
+            if (m_Health == 0) OnHealthDepleted();
 
-            OnHealthChanged(m_health, delta);
+            OnHealthChanged(m_Health, delta);
         }
 
         protected virtual void OnHealthDepleted()
         {
             if (HealthDepleted != null)
                 HealthDepleted.Invoke(this, EventArgs.Empty);
+            if (m_LogOnHealthDepleted)
+                Debug.Log($"name:{transform.name} | instance_id:{transform.GetInstanceID()} | status:dead");
         }
 
         protected virtual void OnHealthChanged(float health, float delta)
         {
             if (HealthChanged != null)
-                HealthChanged.Invoke(this, new HealthDeltaEventArgs { Health = health, Delta = delta });
+                HealthChanged.Invoke(this, new HealthDeltaEventArgs { Health = health, MaxHealth = m_MaxHealth, Delta = delta });
+            if (m_LogOnHealthChanged)
+                Debug.Log($"name:{transform.name} | instance_id:{transform.GetInstanceID()} | health:{health} | delta:{delta}");
         }
     }
 }
