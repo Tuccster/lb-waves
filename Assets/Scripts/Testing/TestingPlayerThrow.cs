@@ -24,7 +24,7 @@ namespace Lemon
 
         private void Update()
         {
-            if (photonView.IsMine && Input.GetKeyDown(KeyCode.Mouse0))
+            if (photonView.IsMine && Input.GetKeyDown(KeyCode.E))
             {
                 if (m_ThrowCoroutine == null)
                     m_ThrowCoroutine = StartCoroutine(ThrowCoroutine());

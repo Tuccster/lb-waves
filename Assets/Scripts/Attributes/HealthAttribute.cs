@@ -11,10 +11,10 @@ namespace Lemon.Attributes
         public float Delta { get; set; }
     }
 
-    public class HealthAttribute : MonoBehaviourPunCallbacks, IPunObservable
+    public class HealthAttribute : MonoBehaviourPunCallbacks//, IPunObservable
     {
         [Header("Settings")]
-        public bool m_SyncOnNetwork;
+        public bool m_SyncOnNetwork = true;
         public float m_Health;
         public float m_MaxHealth;
 
@@ -27,19 +27,32 @@ namespace Lemon.Attributes
         public delegate void HealthDepletedEventHandler(object sender, EventArgs args);
         public event HealthDepletedEventHandler HealthDepleted;
 
+        [HideInInspector] public float m_LastSyncedHealth;
+
         private void Awake()
         {
             m_Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
-            ApplyHealthDelta(0);
+            //ForceUpdate(); // <= Other methods will call this when needed
         }
 
-        public void ApplyHealthDelta(float delta)
+        public void ForceUpdate(bool sync = false)
+        {
+            ApplyHealthDelta(0, sync);
+        }
+
+        [PunRPC]
+        public void SetHealth(float amount, bool sync = true)
+        {
+            ApplyHealthDelta(amount - m_Health, sync);
+        }
+
+        public void ApplyHealthDelta(float delta, bool sync = true)
         {
             m_Health = Mathf.Clamp(m_Health + delta, 0, m_MaxHealth);
-
             if (m_Health == 0) OnHealthDepleted();
-
             OnHealthChanged(m_Health, delta);
+            
+            if (sync) photonView.RPC("SetHealth", RpcTarget.Others, m_Health, false);
         }
 
         protected virtual void OnHealthDepleted()
@@ -58,22 +71,30 @@ namespace Lemon.Attributes
                 Debug.Log($"name:{transform.name} | instance_id:{transform.GetInstanceID()} | health:{health} | delta:{delta}");
         }
 
+        /*
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            if (!m_SyncOnNetwork) return;
-
+            return;
+            //if (!m_SyncOnNetwork || m_Health == m_LastSyncedHealth) return;
+            //Debug.Log($"Syncing m_Health ({UnityEngine.Random.Range(1000, 10000)})");
+            //Debug.Log($"m_Health = {m_Health} | m_LastSyncedHealth = {m_LastSyncedHealth}");
             try
             {
                 // Sync the health across the network
                 if (stream.IsWriting)
                 {
                     // Send order -> 0
+                    Debug.Log($"stream.SendNext({m_Health})");
                     stream.SendNext(m_Health);
                 }
                 else
                 {
                     // Receive order -> 0
                     m_Health = (float)stream.ReceiveNext();
+                    Debug.Log($"(float)stream.ReceiveNext() = {m_Health}"); // <= Only gets called when mouse is moved>???????
+                    //Debug.Log($"rFloat:{rFloat}");
+                    //m_Health = rFloat;
+                    //m_LastSyncedHealth = m_Health;
                 }
             }
             catch (Exception e)
@@ -81,6 +102,7 @@ namespace Lemon.Attributes
                 Debug.LogError(e.Message);
             }
         }
+        */
     }
 }
 

@@ -14,7 +14,7 @@ namespace Lemon
         [Header("Resources")]
         public RectTransform m_InfoContainer;
         public Text m_UsernameDisplay;
-        public Image m_HealthDisplay;
+        public Text m_HealthDisplay;
 
         private Camera m_LocalPlayerCamera;
         private Transform m_Target;
@@ -49,13 +49,14 @@ namespace Lemon
 
             HealthAttribute healthAtt = m_Target.GetComponent<HealthAttribute>();
             healthAtt.HealthChanged += OnHealthChanged;
-            healthAtt.ApplyHealthDelta(0); // <= Used to force event call
+            healthAtt.ForceUpdate(); // <= Used to force event call
         }
 
         // Subscribed to the target player's HealthChanged event in order to update health bar when the player's health changes
         public void OnHealthChanged(HealthAttribute source, HealthDeltaEventArgs e)
         {
-            m_HealthDisplay.fillAmount = e.Health / e.MaxHealth;
+            //m_HealthDisplay.fillAmount = e.Health / e.MaxHealth; // <= Used if health is displayed as a bar
+            m_HealthDisplay.text = $"Health: {e.Health}";
         }
     }
 }
