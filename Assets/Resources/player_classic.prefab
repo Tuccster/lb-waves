@@ -808,7 +808,7 @@ MonoBehaviour:
   m_SyncOnNetwork: 1
   m_Health: 100
   m_MaxHealth: 100
-  m_LogOnHealthChanged: 0
+  m_LogOnHealthChanged: 1
   m_LogOnHealthDepleted: 0
   m_LastSyncedHealth: 0
 --- !u!114 &-1370605599042975784
