@@ -17,18 +17,17 @@ namespace Lemon
 
     public class PlayerNetworking : MonoBehaviourPunCallbacks, IPunObservable
     {
-        [Header("Resources")]
-        public GameObject m_PlayerUI;
-
-        [Space(10)]
         public MonoBehaviour[] localOnlyScripts;
         public GameObject[] localOnlyGameObjects;
 
         public static GameObject localPlayerInstance;
 
-        [HideInInspector] public NonLocalPlayerInfo m_PlayerUIInstance; // Aquired when another player spawns
         [HideInInspector] public Rigidbody m_PlayerRigidbody;    // Aquired on Awake
         [HideInInspector] public HealthAttribute m_PlayerHealth; // Aquired on Awake
+
+        // Used for code that needs to run before we actually disconnect
+        public delegate void OnDisconnectingEventHandler(object sender, EventArgs args);
+        public event OnDisconnectingEventHandler Disconnecting;
 
         private void Awake()
         {
@@ -40,10 +39,7 @@ namespace Lemon
 
             m_PlayerHealth = GetComponent<HealthAttribute>();
             m_PlayerHealth.HealthDepleted += OnHealthDepleted;
-        }
 
-        private void Start()
-        {
             if (!photonView.IsMine && PhotonNetwork.IsConnected)
             {
                 transform.name = "player_nonlocal";
@@ -53,10 +49,6 @@ namespace Lemon
 
                 for (int i = 0; i < localOnlyGameObjects.Length; i++)
                     localOnlyGameObjects[i].SetActive(false);
-
-                // Probably should be moved into PlayerUI
-                m_PlayerUIInstance = Instantiate(m_PlayerUI).GetComponent<NonLocalPlayerInfo>();
-                m_PlayerUIInstance.SetTarget(photonView.Owner.NickName, transform);
             }
             else
             {
@@ -64,15 +56,21 @@ namespace Lemon
             }
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.F1)) 
+                OnDisconnecting();
+        }
+
+        public void OnDisconnecting()
+        {
+            Disconnecting?.Invoke(this, EventArgs.Empty);
+            PhotonNetwork.Disconnect();
+        }
+
         public void OnHealthDepleted(object sender, EventArgs e)
         {
             //PhotonNetwork.Disconnect(); // Welp, that doesn't work as expected
-        }
-
-        public override void OnDisable()
-        {
-            base.OnDisable();
-            if (m_PlayerUIInstance != null) Destroy(m_PlayerUIInstance);
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

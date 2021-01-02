@@ -27,19 +27,14 @@ namespace Lemon
 
         private void Update()
         {
-            // Check if username position is onscreen; if not hold it still offscreen
-            if (Maths.PointInCameraFrustum(m_LocalPlayerCamera, m_Target.position + offset) && m_Target != null)
-                m_InfoContainer.position = m_LocalPlayerCamera.WorldToScreenPoint(m_Target.position + offset);
-            else
-                m_InfoContainer.position = new Vector3(-1000, -1000, 0);
-
-
-            if (m_Target == null) Destroy(gameObject);
-        }
-
-        private void OnDestroy()
-        {
-            m_Target.GetComponent<HealthAttribute>().HealthChanged -= OnHealthChanged;
+            if(m_Target != null)
+            {
+                // Check if username position is onscreen; if not hold it still offscreen
+                if (Maths.PointInCameraFrustum(m_LocalPlayerCamera, m_Target.position + offset) && m_Target != null)
+                    m_InfoContainer.position = m_LocalPlayerCamera.WorldToScreenPoint(m_Target.position + offset);
+                else
+                    m_InfoContainer.position = new Vector3(-1000, -1000, 0);
+            }
         }
 
         public void SetTarget(string targetUsername, Transform targetTransform)
@@ -49,10 +44,17 @@ namespace Lemon
 
             HealthAttribute healthAtt = m_Target.GetComponent<HealthAttribute>();
             healthAtt.HealthChanged += OnHealthChanged;
-            healthAtt.ForceUpdate(); // <= Used to force event call
+            healthAtt.ForceUpdate();
         }
 
-        // Subscribed to the target player's HealthChanged event in order to update health bar when the player's health changes
+        public void RemoveTarget()
+        {
+            Debug.Log("RemoveTarget called by " + transform.name);
+            m_Target.GetComponent<HealthAttribute>().HealthChanged -= OnHealthChanged;
+            Destroy(gameObject);
+        }
+
+        // Subscribed to the target player's HealthChanged event in order to update health when the player's health changes
         public void OnHealthChanged(HealthAttribute source, HealthDeltaEventArgs e)
         {
             //m_HealthDisplay.fillAmount = e.Health / e.MaxHealth; // <= Used if health is displayed as a bar

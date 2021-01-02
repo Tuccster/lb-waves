@@ -22,12 +22,6 @@ namespace Lemon
                 PhotonNetwork.Instantiate(prefabPlayer.name, new Vector3(0f, 50f, 0f), Quaternion.identity, 0);
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.F1))
-                PhotonNetwork.Disconnect();
-        }
-
         public override void OnLeftRoom()
         {
             SceneManager.LoadScene(0);

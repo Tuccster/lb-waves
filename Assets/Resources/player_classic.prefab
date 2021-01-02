@@ -389,7 +389,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f04e8d10165fda743978401d5e5e5508, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraController: {fileID: 2501286831573763466}
+  m_PlayerNetworking: {fileID: 2531514055229566545}
+  m_CameraController: {fileID: 2501286831573763466}
 --- !u!1 &2532548386789838366
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,6 +560,7 @@ GameObject:
   - component: {fileID: -6655831510497291974}
   - component: {fileID: 2531514055229566545}
   - component: {fileID: -2016677186303211268}
+  - component: {fileID: 7124706709341007669}
   - component: {fileID: 2223721495065593736}
   - component: {fileID: -1370605599042975784}
   m_Layer: 0
@@ -754,8 +756,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691ae03935f27d141be15257f35e3c5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerUI: {fileID: 2270082340723741359, guid: 893ed45dd76b20c41a340cb50bd592ea,
-    type: 3}
   localOnlyScripts:
   - {fileID: 2502261308076780642}
   - {fileID: 2501564682317872850}
@@ -765,7 +765,6 @@ MonoBehaviour:
   localOnlyGameObjects:
   - {fileID: 2532595553597812484}
   - {fileID: 4038436184961276625}
-  m_PlayerUIInstance: {fileID: 0}
   m_PlayerRigidbody: {fileID: 0}
   m_PlayerHealth: {fileID: 0}
 --- !u!114 &-2016677186303211268
@@ -793,6 +792,24 @@ MonoBehaviour:
   - {fileID: 7385436651082998872}
   - {fileID: 3925782341484224903}
   - {fileID: 1034133811930262052}
+--- !u!114 &7124706709341007669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2533069279634907604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2723ade84dbe81a49aaaeba5e6252a88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_NonlocalPlayerUI: {fileID: 2270082340723741359, guid: 893ed45dd76b20c41a340cb50bd592ea,
+    type: 3}
+  m_PlayerNetworking: {fileID: 2531514055229566545}
+  m_HealthAttribute: {fileID: 2223721495065593736}
+  m_HealthDisplay: {fileID: 7177334342255594591}
+  m_NonlocalPlayerInfo: {fileID: 0}
 --- !u!114 &2223721495065593736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -808,7 +825,7 @@ MonoBehaviour:
   m_SyncOnNetwork: 1
   m_Health: 100
   m_MaxHealth: 100
-  m_LogOnHealthChanged: 1
+  m_LogOnHealthChanged: 0
   m_LogOnHealthDepleted: 0
   m_LastSyncedHealth: 0
 --- !u!114 &-1370605599042975784
@@ -1194,7 +1211,6 @@ GameObject:
   - component: {fileID: 6083609903243390839}
   - component: {fileID: 4175982649599771314}
   - component: {fileID: 1104126155579086633}
-  - component: {fileID: 1166825043428084226}
   m_Layer: 0
   m_Name: canvas_client
   m_TagString: Untagged
@@ -1284,20 +1300,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &1166825043428084226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4038436184961276625}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2723ade84dbe81a49aaaeba5e6252a88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HealthAttribute: {fileID: 2223721495065593736}
-  m_HealthDisplay: {fileID: 7177334342255594591}
 --- !u!1 &5110531988366007891
 GameObject:
   m_ObjectHideFlags: 0
