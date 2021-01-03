@@ -3,18 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using CMF;
 using Photon.Realtime;
+using Lemon.EventChannels;
 
 namespace Lemon
 {
+    // This class should not be networked. What should actually happen is that an PhotonViewEventChannelSO event should be called
+    // and then we can look through all the players [which idealy would be stored some place]... [haha PhotonNetwork.playerList]
+
     public class PlayerMouseController : MonoBehaviourPunCallbacks
     {
-        public PlayerNetworking m_PlayerNetworking; // Should be dependency injected
-        public CMF.CameraController m_CameraController;
+        public PhotonPlayerECSO m_PlayerDisconnectingEvent;
+        public PlayerNetworking m_PlayerNetworking;
+        private CameraController m_CameraController;
 
         private void Awake()
         {
-            m_PlayerNetworking.Disconnecting += OnDisconnecting;
+            m_CameraController = gameObject.GetComponent<CameraController>();
+
+            m_PlayerDisconnectingEvent.PhotonPlayerEvent += OnDisconnecting;
         }
 
         private void Update()
@@ -32,9 +40,10 @@ namespace Lemon
             m_CameraController.enabled = state;
         }
 
-        public void OnDisconnecting(object sender, EventArgs e)
+        public void OnDisconnecting(object sender, PlayerEventArgs e)
         {
-            LockMouseToCamera(false);
+            if (m_PlayerNetworking.photonView.Owner.UserId == e.m_Player.UserId)
+                LockMouseToCamera(false);
         }
     }
 }

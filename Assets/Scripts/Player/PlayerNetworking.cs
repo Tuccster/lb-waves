@@ -7,6 +7,7 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using Lemon.Attributes;
+using Lemon.EventChannels;
 
 namespace Lemon
 {
@@ -15,19 +16,17 @@ namespace Lemon
         implications such as the player's UI will be handled in a different class.
     */
 
-    public class PlayerNetworking : MonoBehaviourPunCallbacks, IPunObservable
+    public class PlayerNetworking : MonoBehaviourPunCallbacks
     {
+        [Header("Resources")]
+        public PhotonPlayerECSO m_PlayerDisconnectingEvent;
         public MonoBehaviour[] localOnlyScripts;
         public GameObject[] localOnlyGameObjects;
 
         public static GameObject localPlayerInstance;
 
         [HideInInspector] public Rigidbody m_PlayerRigidbody;    // Aquired on Awake
-        [HideInInspector] public HealthAttribute m_PlayerHealth; // Aquired on Awake
-
-        // Used for code that needs to run before we actually disconnect
-        public delegate void OnDisconnectingEventHandler(object sender, EventArgs args);
-        public event OnDisconnectingEventHandler Disconnecting;
+        [HideInInspector] public PlayerUI m_PlayerUI;
 
         private void Awake()
         {
@@ -36,9 +35,7 @@ namespace Lemon
             DontDestroyOnLoad(this.gameObject);
 
             m_PlayerRigidbody = GetComponent<Rigidbody>();
-
-            m_PlayerHealth = GetComponent<HealthAttribute>();
-            m_PlayerHealth.HealthDepleted += OnHealthDepleted;
+            m_PlayerUI = GetComponent<PlayerUI>();
 
             if (!photonView.IsMine && PhotonNetwork.IsConnected)
             {
@@ -59,31 +56,11 @@ namespace Lemon
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.F1)) 
-                OnDisconnecting();
-        }
-
-        public void OnDisconnecting()
-        {
-            Disconnecting?.Invoke(this, EventArgs.Empty);
-            PhotonNetwork.Disconnect();
-        }
-
-        public void OnHealthDepleted(object sender, EventArgs e)
-        {
-            //PhotonNetwork.Disconnect(); // Welp, that doesn't work as expected
-        }
-
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-        {
-            if (stream.IsWriting)
             {
-                // We own this player: send the others our data
-                //stream.SendNext(m_Health);
-            }
-            else
-            {
-                // Network player, receive data
-                //this.m_Health = (float)stream.ReceiveNext();
+                //m_PlayerDisconnectingEvent.RaiseEvent(this, new PlayerEventArgs(PhotonNetwork.LocalPlayer));
+                //m_PlayerUI.Disconnecting(); // Tell the ui script for this player to handle what it needs to before we disconnect
+                Destroy(m_PlayerUI.m_NonlocalPlayerInfo.gameObject);
+                PhotonNetwork.Disconnect();
             }
         }
     }

@@ -189,6 +189,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offset: {x: 0, y: 2.5, z: 0}
+  m_PlayerDisconnectingEvent: {fileID: 11400000, guid: 302878a452bff1f458bad6a804692ec6,
+    type: 2}
   m_InfoContainer: {fileID: 6103939464699005786}
   m_UsernameDisplay: {fileID: 2270082341801102077}
   m_HealthDisplay: {fileID: 5837447108756145903}
