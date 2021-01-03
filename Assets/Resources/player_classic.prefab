@@ -389,8 +389,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f04e8d10165fda743978401d5e5e5508, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerDisconnectingEvent: {fileID: 11400000, guid: 302878a452bff1f458bad6a804692ec6,
-    type: 2}
   m_PlayerNetworking: {fileID: 2531514055229566545}
 --- !u!1 &2532548386789838366
 GameObject:
@@ -756,6 +754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691ae03935f27d141be15257f35e3c5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_PlayerMouseController: {fileID: 3439754201041838892}
   m_PlayerDisconnectingEvent: {fileID: 11400000, guid: 302878a452bff1f458bad6a804692ec6,
     type: 2}
   localOnlyScripts:
@@ -767,8 +766,6 @@ MonoBehaviour:
   localOnlyGameObjects:
   - {fileID: 2532595553597812484}
   - {fileID: 4038436184961276625}
-  m_PlayerRigidbody: {fileID: 0}
-  m_PlayerUI: {fileID: 0}
 --- !u!114 &-2016677186303211268
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -809,7 +806,6 @@ MonoBehaviour:
   m_NonlocalPlayerUI: {fileID: 2270082340723741359, guid: 893ed45dd76b20c41a340cb50bd592ea,
     type: 3}
   m_HealthDisplay: {fileID: 7177334342255594591}
-  m_NonlocalPlayerInfo: {fileID: 0}
 --- !u!114 &2223721495065593736
 MonoBehaviour:
   m_ObjectHideFlags: 0

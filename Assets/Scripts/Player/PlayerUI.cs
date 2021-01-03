@@ -16,8 +16,7 @@ namespace Lemon
         public GameObject m_NonlocalPlayerUI;
         public Text m_HealthDisplay;
 
-        [HideInInspector] public NonLocalPlayerInfo m_NonlocalPlayerInfo;
-
+        private NonLocalPlayerInfo m_NonlocalPlayerInfo;
         private PlayerNetworking m_PlayerNetworking;
         private HealthAttribute m_HealthAttribute;
 
@@ -36,9 +35,9 @@ namespace Lemon
             }
         }
 
-        public void Disconnecting()
+        public void OnDestroy()
         {
-            m_NonlocalPlayerInfo?.RemoveSetTarget(); // Somehow null??????????? 
+            m_NonlocalPlayerInfo?.RemoveSetTarget();
         }
 
         public void OnHealthChanged(object sender, HealthDeltaEventArgs e)

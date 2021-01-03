@@ -14,15 +14,12 @@ namespace Lemon
 
     public class PlayerMouseController : MonoBehaviourPunCallbacks
     {
-        public PhotonPlayerECSO m_PlayerDisconnectingEvent;
         public PlayerNetworking m_PlayerNetworking;
         private CameraController m_CameraController;
 
         private void Awake()
         {
             m_CameraController = gameObject.GetComponent<CameraController>();
-
-            m_PlayerDisconnectingEvent.PhotonPlayerEvent += OnDisconnecting;
         }
 
         private void Update()
@@ -35,15 +32,9 @@ namespace Lemon
 
         public void LockMouseToCamera(bool state)
         {
-            if (!photonView.IsMine) return; // <= The absence of this line caused so much grief
+            if (!photonView.IsMine) return;
             Cursor.lockState = state ? CursorLockMode.Locked : CursorLockMode.None;
             m_CameraController.enabled = state;
-        }
-
-        public void OnDisconnecting(object sender, PlayerEventArgs e)
-        {
-            if (m_PlayerNetworking.photonView.Owner.UserId == e.m_Player.UserId)
-                LockMouseToCamera(false);
         }
     }
 }

@@ -19,23 +19,21 @@ namespace Lemon
     public class PlayerNetworking : MonoBehaviourPunCallbacks
     {
         [Header("Resources")]
+        public PlayerMouseController m_PlayerMouseController;
         public PhotonPlayerECSO m_PlayerDisconnectingEvent;
         public MonoBehaviour[] localOnlyScripts;
         public GameObject[] localOnlyGameObjects;
 
         public static GameObject localPlayerInstance;
 
-        [HideInInspector] public Rigidbody m_PlayerRigidbody;    // Aquired on Awake
-        [HideInInspector] public PlayerUI m_PlayerUI;
+        private Rigidbody m_PlayerRigidbody;
+        private PlayerUI m_PlayerUI;
 
         private void Awake()
         {
-            if (photonView.IsMine)
-                PlayerNetworking.localPlayerInstance = this.gameObject;
-            DontDestroyOnLoad(this.gameObject);
-
             m_PlayerRigidbody = GetComponent<Rigidbody>();
             m_PlayerUI = GetComponent<PlayerUI>();
+            DontDestroyOnLoad(gameObject);
 
             if (!photonView.IsMine && PhotonNetwork.IsConnected)
             {
@@ -49,17 +47,16 @@ namespace Lemon
             }
             else
             {
+                PlayerNetworking.localPlayerInstance = gameObject;
                 transform.name = "player_local";
             }
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.F1)) 
+            if (Input.GetKeyDown(KeyCode.F1))
             {
-                //m_PlayerDisconnectingEvent.RaiseEvent(this, new PlayerEventArgs(PhotonNetwork.LocalPlayer));
-                //m_PlayerUI.Disconnecting(); // Tell the ui script for this player to handle what it needs to before we disconnect
-                Destroy(m_PlayerUI.m_NonlocalPlayerInfo.gameObject);
+                m_PlayerMouseController.LockMouseToCamera(false);
                 PhotonNetwork.Disconnect();
             }
         }
