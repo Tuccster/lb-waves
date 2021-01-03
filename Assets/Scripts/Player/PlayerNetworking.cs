@@ -14,6 +14,7 @@ namespace Lemon
     /*
         This is a general networking class for the player. More specific networking
         implications such as the player's UI will be handled in a different class.
+        This class also handles data streaming for the player.
     */
 
     public class PlayerNetworking : MonoBehaviourPunCallbacks
@@ -60,5 +61,19 @@ namespace Lemon
                 PhotonNetwork.Disconnect();
             }
         }
+
+        /*
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+        */
     }
 }
