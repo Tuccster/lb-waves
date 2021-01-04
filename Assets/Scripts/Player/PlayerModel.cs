@@ -14,52 +14,63 @@ namespace Lemon
 
     public class PlayerModel : MonoBehaviourPunCallbacks, IPunObservable
     {
-        public bool m_ShowFirstPersonModel;
-        public bool m_ShowThirdPersonModel;
-
         [Header("Model Rigs")]
         public Transform m_FaceTrans;
         public Transform m_BodyTrans;
+        public Transform m_RightArm;
 
-        [Header("Model Renderers")]
-        public MeshRenderer[] m_ModelFirstPerson;
-        public MeshRenderer[] m_ModelThirdPerson;
+        [Header("Models")]
+        public GameObject[] m_ModelFirstPersonRoots;
+        public bool m_ShowFirstPersonModel;
+        [Space(10)]
+        public GameObject[] m_ModelThirdPersonRoots;
+        public bool m_ShowThirdPersonModel;
+
 
         private Vector3 m_Position;
         private Vector3 m_LookDir;
         private Camera m_PlayerCamera;
 
-        // TESTING
-        private float m_ReceivedBodyRotY;
+        private Quaternion m_ArmCameraOffset;
 
         private void Awake()
         {
             m_PlayerCamera = Camera.main; // <= May need to go in Start() instead
             ReloadModels();
+
+            m_ArmCameraOffset = m_RightArm.rotation * Quaternion.Inverse(m_PlayerCamera.transform.rotation);
         }
 
         // Correctly set the visibilty of the first and third-person model renderers
         public void ReloadModels()
         {
             if (m_ShowFirstPersonModel)
-            {
-                for (int i = 0; i < m_ModelFirstPerson.Length; i++)
-                    if (m_ModelFirstPerson[i] != null)
-                        m_ModelFirstPerson[i].enabled = photonView.IsMine;
-            }
+                SetAllChildrenMeshRenderers(m_ModelFirstPersonRoots, photonView.IsMine);
+
             if (!m_ShowThirdPersonModel)
+                SetAllChildrenMeshRenderers(m_ModelThirdPersonRoots, !photonView.IsMine);
+        }
+
+        private void SetAllChildrenMeshRenderers(GameObject[] roots, bool state)
+        {
+            for (int i = 0; i < roots.Length; i++)
             {
-                for (int i = 0; i < m_ModelThirdPerson.Length; i++)
-                    if (m_ModelThirdPerson[i] != null)
-                        m_ModelThirdPerson[i].enabled = !photonView.IsMine;
+                foreach (Transform allChildren in roots[i].GetComponentsInChildren<Transform>())
+                {
+                    MeshRenderer childMeshRenderer = allChildren.GetComponent<MeshRenderer>();
+                    if (childMeshRenderer != null)
+                        childMeshRenderer.enabled = state;
+                }
             }
         }
 
         private void Update()
         {
+            // Update client's third person model
             if (photonView.IsMine)
             {
                 m_BodyTrans.rotation = Quaternion.Euler(0, m_PlayerCamera.transform.eulerAngles.y, 0);
+                m_RightArm.rotation = m_PlayerCamera.transform.rotation * m_ArmCameraOffset;
                 m_Position = transform.position;
                 m_LookDir = m_PlayerCamera.transform.forward;
             }
@@ -76,14 +87,17 @@ namespace Lemon
                     // Send order -> 0
                     stream.SendNext(m_BodyTrans.transform.eulerAngles.y);
                     // Send order -> 1
+                    stream.SendNext(m_RightArm.transform.eulerAngles); // ideally we could just send a float
+                    // Send order -> 2
                     stream.SendNext(m_LookDir);
                 }
                 else
                 {
                     // Receive order -> 0
-                    m_ReceivedBodyRotY = (float)stream.ReceiveNext();
-                    m_BodyTrans.rotation = Quaternion.Euler(0, m_ReceivedBodyRotY, 0);
+                    m_BodyTrans.rotation = Quaternion.Euler(0, (float)stream.ReceiveNext(), 0);
                     // Receive order -> 1
+                    m_RightArm.rotation = Quaternion.Euler((Vector3)stream.ReceiveNext());
+                    // Receive order -> 2
                     this.m_LookDir = (Vector3)stream.ReceiveNext();
                     m_FaceTrans.forward = m_LookDir;
                 }
@@ -97,7 +111,8 @@ namespace Lemon
         public void OnGUI()
         {
             if (!photonView.IsMine) return;
-            GUI.Label(new Rect(10, 10, 512, 32), $"m_ReceivedBodyRotY -> {m_ReceivedBodyRotY}");
+
+            //GUI.Label(new Rect(10, 10, 512, 32), $"m_ReceivedBodyRotY -> {m_ReceivedBodyRotY}");
         }
     }
 }
