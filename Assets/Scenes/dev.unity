@@ -1938,7 +1938,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ab0af517489a014ebafcf3742fa6ed8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerPrefab: {fileID: 2272720419760155004, guid: 14c1898d835c79a43afed3972963af7a,
+  m_PlayerPrefab: {fileID: 2533069279634907604, guid: e4743c87df0c0ab48a25ab5334b7690a,
     type: 3}
 --- !u!4 &1957084270
 Transform:

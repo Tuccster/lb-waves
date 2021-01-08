@@ -16,12 +16,19 @@ namespace Lemon
 
         private void Awake()
         {
+            if (!PhotonNetwork.IsConnected) 
+            {
+                PhotonNetwork.LoadLevel("menu");
+                return;
+            }
+
             if (m_PlayerPrefab == null)
             {
                 Debug.LogError($"m_PlayerPrefab is not assigned in {this}. Disconnecting from server...");
                 PhotonNetwork.Disconnect();
             }
 
+            // WHY
             if (PlayerNetworking.localPlayerInstance == null)
                 PhotonNetwork.Instantiate(m_PlayerPrefab.name, new Vector3(0f, 50f, 0f), Quaternion.identity, 0);
         }
