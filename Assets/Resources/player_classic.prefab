@@ -1492,6 +1492,7 @@ MonoBehaviour:
   m_FaceTrans: {fileID: 8476435952028979501}
   m_ModelsContainer: {fileID: 6910905689197808432}
   m_FirstPersonModelPivot: {fileID: 7270110666735287762}
+  m_ThirdPersonArmPivot: {fileID: 7844529638225208685}
   m_ModelFirstPersonRoots:
   - {fileID: 9025588103497487207}
   m_ShowFirstPersonModel: 1
@@ -3155,15 +3156,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8500704446877764289}
-  m_LocalRotation: {x: -0.68692696, y: -0.16771923, z: -0.16771848, w: 0.6869295}
-  m_LocalPosition: {x: 0.531, y: -0.45300007, z: 0.467}
+  m_LocalRotation: {x: -0.79385424, y: -0.19382638, z: -0.13671365, w: 0.559943}
+  m_LocalPosition: {x: 0.756, y: -0.462, z: 0.467}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7413466948955400897}
   - {fileID: 2452651430226060553}
   m_Father: {fileID: 7270110666735287762}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90.00001, y: 0, z: -27.441002}
+  m_LocalEulerAnglesHint: {x: -109.605995, y: -0.000015258789, z: -27.441986}
 --- !u!1 &8658032609001671561
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,6 +18,7 @@ namespace Lemon
         public Transform m_FaceTrans;
         public Transform m_ModelsContainer;
         public Transform m_FirstPersonModelPivot;
+        public Transform m_ThirdPersonArmPivot;
 
         [Header("Models")]
         public Transform[] m_ModelFirstPersonRoots;
@@ -31,14 +32,16 @@ namespace Lemon
         private Vector3 m_LookDir;
         private Camera m_PlayerCamera;
 
-        private Quaternion m_ArmCameraOffset;
+        private Quaternion m_FirstPersonModelCameraOffset;
+        private Quaternion m_ThirdPersonArmCameraOffset;
 
         private void Awake()
         {
             m_PlayerCamera = Camera.main; // <= May need to go in Start() instead
             ReloadModels();
 
-            m_ArmCameraOffset = m_FirstPersonModelPivot.rotation * Quaternion.Inverse(m_PlayerCamera.transform.rotation);
+            m_FirstPersonModelCameraOffset = m_FirstPersonModelPivot.rotation * Quaternion.Inverse(m_PlayerCamera.transform.rotation);
+            m_ThirdPersonArmCameraOffset = m_ThirdPersonArmPivot.rotation * Quaternion.Inverse(m_PlayerCamera.transform.rotation);
         }
 
         // Correctly set the visibilty of the first and third-person model renderers
@@ -63,7 +66,8 @@ namespace Lemon
             if (photonView.IsMine)
             {
                 m_ModelsContainer.rotation = Quaternion.Euler(0, m_PlayerCamera.transform.eulerAngles.y, 0);
-                m_FirstPersonModelPivot.rotation = m_PlayerCamera.transform.rotation * m_ArmCameraOffset;
+                m_FirstPersonModelPivot.rotation = m_PlayerCamera.transform.rotation * m_FirstPersonModelCameraOffset;
+                m_ThirdPersonArmPivot.rotation = m_PlayerCamera.transform.rotation * m_ThirdPersonArmCameraOffset;
                 m_Position = transform.position;
                 m_LookDir = m_PlayerCamera.transform.forward;
             }
@@ -80,9 +84,11 @@ namespace Lemon
                     // Send order -> 0
                     stream.SendNext(m_ModelsContainer.transform.eulerAngles.y);
                     // Send order -> 1
-                    stream.SendNext(m_FirstPersonModelPivot.transform.eulerAngles); // ideally we could just send a float
+                    stream.SendNext(m_FirstPersonModelPivot.transform.eulerAngles); // UNOPTIMIZED! SEND FLOAT!
                     // Send order -> 2
-                    stream.SendNext(m_LookDir);
+                    stream.SendNext(m_PlayerCamera.transform.rotation.eulerAngles); // UNOPTIMIZED! SEND FLOAT!
+                    // Send order -> 3
+                    stream.SendNext(m_ThirdPersonArmPivot.rotation.eulerAngles);  // UNOPTIMIZED! SEND FLOAT!
                 }
                 else
                 {
@@ -91,8 +97,9 @@ namespace Lemon
                     // Receive order -> 1
                     m_FirstPersonModelPivot.rotation = Quaternion.Euler((Vector3)stream.ReceiveNext());
                     // Receive order -> 2
-                    this.m_LookDir = (Vector3)stream.ReceiveNext();
-                    m_FaceTrans.forward = m_LookDir;
+                    m_FaceTrans.rotation = Quaternion.Euler((Vector3)stream.ReceiveNext());
+                    // Receive order -> 3
+                    m_ThirdPersonArmPivot.rotation = Quaternion.Euler((Vector3)stream.ReceiveNext());
                 }
             }
             catch (Exception e)
