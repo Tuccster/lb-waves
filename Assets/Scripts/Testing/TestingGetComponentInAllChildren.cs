@@ -7,8 +7,9 @@ public class TestingGetComponentInAllChildren : MonoBehaviour
 {
     private void Awake()
     {
-        MeshRenderer[] allChildren = UnityHelper.GetComponentFromAllChildren<MeshRenderer>(transform, false);
-        foreach(MeshRenderer mr in allChildren)
-            mr.enabled = false;
+        Transform[] allChildren = UnityHelper.GetAllChildTransforms(transform);
+        Debug.Log($"children_found -> {allChildren.Length}");
+        for (int i = 0; i < allChildren.Length; i++)
+            Debug.Log($"array_index -> {i} | child_name -> {allChildren[i].name} | child_id -> {allChildren[i].GetInstanceID()}");
     }
 }
