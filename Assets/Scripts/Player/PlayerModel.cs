@@ -14,16 +14,19 @@ namespace Lemon
 
     public class PlayerModel : MonoBehaviourPunCallbacks, IPunObservable
     {
+        [Header("Resoureces")]
+        public Transform m_CameraControls;
+
         [Header("Model Rigs")]
         public Transform m_FaceTrans;
-        public Transform m_BodyTrans;
-        public Transform m_RightArm;
+        public Transform m_ModelContainer;
+        public Transform m_FirstPersonArmsPivot;
 
         [Header("Models")]
-        public GameObject[] m_ModelFirstPersonRoots;
+        public Transform[] m_ModelFirstPersonRoots;
         public bool m_ShowFirstPersonModel;
         [Space(10)]
-        public GameObject[] m_ModelThirdPersonRoots;
+        public Transform[] m_ModelThirdPersonRoots;
         public bool m_ShowThirdPersonModel;
 
 
@@ -38,30 +41,23 @@ namespace Lemon
             m_PlayerCamera = Camera.main; // <= May need to go in Start() instead
             ReloadModels();
 
-            m_ArmCameraOffset = m_RightArm.rotation * Quaternion.Inverse(m_PlayerCamera.transform.rotation);
+            m_ArmCameraOffset = m_FirstPersonArmsPivot.rotation * Quaternion.Inverse(m_PlayerCamera.transform.rotation);
         }
 
         // Correctly set the visibilty of the first and third-person model renderers
         public void ReloadModels()
         {
             if (m_ShowFirstPersonModel)
-                SetAllChildrenMeshRenderers(m_ModelFirstPersonRoots, photonView.IsMine);
+                SetMeshRendererState(UnityHelper.GetComponentFromAllChildren<MeshRenderer>(m_ModelFirstPersonRoots, true), photonView.IsMine);
 
             if (!m_ShowThirdPersonModel)
-                SetAllChildrenMeshRenderers(m_ModelThirdPersonRoots, !photonView.IsMine);
+                SetMeshRendererState(UnityHelper.GetComponentFromAllChildren<MeshRenderer>(m_ModelThirdPersonRoots, true), !photonView.IsMine);
         }
 
-        private void SetAllChildrenMeshRenderers(GameObject[] roots, bool state)
+        private void SetMeshRendererState(MeshRenderer[] renderers, bool state)
         {
-            for (int i = 0; i < roots.Length; i++)
-            {
-                foreach (Transform allChildren in roots[i].GetComponentsInChildren<Transform>())
-                {
-                    MeshRenderer childMeshRenderer = allChildren.GetComponent<MeshRenderer>();
-                    if (childMeshRenderer != null)
-                        childMeshRenderer.enabled = state;
-                }
-            }
+            for (int i = 0; i < renderers.Length; i++)
+                renderers[i].enabled = state;
         }
 
         private void Update()
@@ -69,8 +65,8 @@ namespace Lemon
             // Update client's third person model
             if (photonView.IsMine)
             {
-                m_BodyTrans.rotation = Quaternion.Euler(0, m_PlayerCamera.transform.eulerAngles.y, 0);
-                m_RightArm.rotation = m_PlayerCamera.transform.rotation * m_ArmCameraOffset;
+                m_ModelContainer.rotation = Quaternion.Euler(0, m_PlayerCamera.transform.eulerAngles.y, 0);
+                m_FirstPersonArmsPivot.rotation = m_PlayerCamera.transform.rotation * m_ArmCameraOffset;
                 m_Position = transform.position;
                 m_LookDir = m_PlayerCamera.transform.forward;
             }
@@ -85,18 +81,18 @@ namespace Lemon
                 if (stream.IsWriting)
                 {
                     // Send order -> 0
-                    stream.SendNext(m_BodyTrans.transform.eulerAngles.y);
+                    stream.SendNext(m_ModelContainer.transform.eulerAngles.y);
                     // Send order -> 1
-                    stream.SendNext(m_RightArm.transform.eulerAngles); // ideally we could just send a float
+                    stream.SendNext(m_FirstPersonArmsPivot.transform.eulerAngles); // ideally we could just send a float
                     // Send order -> 2
                     stream.SendNext(m_LookDir);
                 }
                 else
                 {
                     // Receive order -> 0
-                    m_BodyTrans.rotation = Quaternion.Euler(0, (float)stream.ReceiveNext(), 0);
+                    m_ModelContainer.rotation = Quaternion.Euler(0, (float)stream.ReceiveNext(), 0);
                     // Receive order -> 1
-                    m_RightArm.rotation = Quaternion.Euler((Vector3)stream.ReceiveNext());
+                    m_FirstPersonArmsPivot.rotation = Quaternion.Euler((Vector3)stream.ReceiveNext());
                     // Receive order -> 2
                     this.m_LookDir = (Vector3)stream.ReceiveNext();
                     m_FaceTrans.forward = m_LookDir;
@@ -110,8 +106,7 @@ namespace Lemon
 
         public void OnGUI()
         {
-            if (!photonView.IsMine) return;
-
+            GUI.Label(new Rect(10, 10, 512, 32), $"photonView.IsMine -> {photonView.IsMine}");
             //GUI.Label(new Rect(10, 10, 512, 32), $"m_ReceivedBodyRotY -> {m_ReceivedBodyRotY}");
         }
     }

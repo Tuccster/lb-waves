@@ -10,7 +10,7 @@ using Photon.Realtime;
 namespace Lemon
 {
     public class ServerSceneManager : MonoBehaviourPunCallbacks
-    {   
+    {
         [Header("Resources")]
         public GameObject m_PlayerPrefab;
 
@@ -23,7 +23,10 @@ namespace Lemon
             }
 
             if (PlayerNetworking.localPlayerInstance == null)
-                PhotonNetwork.Instantiate(m_PlayerPrefab.name, new Vector3(0f, 50f, 0f), Quaternion.identity, 0);
+                if (PhotonNetwork.IsConnected)
+                    PhotonNetwork.Instantiate(m_PlayerPrefab.name, new Vector3(0f, 50f, 0f), Quaternion.identity, 0);
+                else
+                    PhotonNetwork.LoadLevel("menu");
         }
 
         public override void OnLeftRoom()
