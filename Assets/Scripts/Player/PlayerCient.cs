@@ -7,6 +7,9 @@ namespace Lemon
 {
     public class PlayerCient : MonoBehaviour
     {
-        
+        public void SetWeapon()
+        {
+            
+        }
     }
 }
