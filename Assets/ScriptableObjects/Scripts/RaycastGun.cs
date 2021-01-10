@@ -12,6 +12,7 @@ namespace Lemon
         public float fireCooldown;
         public float maxDamage;
         public float maxDistance;
+        [Range(0.0000f, 100.0000f)]
         public float falloffPercentPerUnit;
         public float force;
         public bool automatic;

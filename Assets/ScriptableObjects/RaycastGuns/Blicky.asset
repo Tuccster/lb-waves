@@ -17,6 +17,8 @@ MonoBehaviour:
   fireCooldown: 0.1
   maxDamage: 100
   maxDistance: 100
+  falloffPercentPerUnit: 1
+  force: 70
   automatic: 1
   gunType: 0
   gunPurpose: 0

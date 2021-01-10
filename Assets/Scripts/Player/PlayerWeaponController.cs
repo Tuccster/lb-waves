@@ -5,6 +5,11 @@ using Lemon.Attributes;
 
 namespace Lemon
 {
+    /*
+        This class in used for the actual shooting mechanics as well as calling methods to update the
+        PlayerWeaponModelController's models.
+    */
+
     public class PlayerWeaponController : MonoBehaviour
     {
         [Header("Settings")]
@@ -62,15 +67,25 @@ namespace Lemon
 
         private IEnumerator ShootEnumerator(Vector3 startPos, Vector3 direction, RaycastGun gun)
         {
+            // Original formula: -\left(a-\left(-a\frac{x}{m}\right)\cdot\left(1-\frac{m}{m\left(1-l\right)^{x}}\right)\right)
+            // Simplified      : a \left(f \sqrt{m} x (1-l)^x-\frac{x}{m}-1\right)
             RaycastHit hit;
             if (Physics.Raycast(startPos, direction, out hit, gun.maxDistance))
             {
                 HealthAttribute healthAtt = hit.transform.GetComponent<HealthAttribute>();
                 if (healthAtt != null)
                 {
-                    float baseDamage = ((hit.distance / gun.maxDistance) * gun.maxDamage);
-                    float falloff = Mathf.Pow(gun.falloffPercentPerUnit, (int)hit.distance);
-                    healthAtt.ApplyHealthDelta(baseDamage * falloff);
+                    float baseDamage = -gun.maxDamage * (hit.distance / gun.maxDistance);
+                    float falloff = 1 - (gun.maxDistance / (gun.maxDistance * Mathf.Pow(1 - (gun.falloffPercentPerUnit * 0.01f), (int)hit.distance)));
+                    float final = -(gun.maxDamage - (baseDamage * falloff));
+                    Debug.Log(final.ToString("0.0000"));
+                    healthAtt.ApplyHealthDelta(final);
+                }
+
+                Rigidbody rigidbody = hit.transform.GetComponent<Rigidbody>();
+                if (rigidbody != null)
+                {
+                    rigidbody.AddForce(direction * gun.force);
                 }
             }
             Debug.DrawRay(startPos, direction * hit.distance, Color.yellow, 10);
