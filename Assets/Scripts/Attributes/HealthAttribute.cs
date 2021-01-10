@@ -17,6 +17,7 @@ namespace Lemon.Attributes
         public bool m_SyncOnNetwork = true;
         public float m_Health;
         public float m_MaxHealth;
+        public bool m_DestroyOnDeplete;
 
         [Space(10)]
         public bool m_LogOnHealthChanged = false;
@@ -65,6 +66,8 @@ namespace Lemon.Attributes
                 HealthDepleted.Invoke(this, EventArgs.Empty);
             if (m_LogOnHealthDepleted)
                 Debug.Log($"name:{transform.name} | instance_id:{transform.GetInstanceID()} | status:dead");
+            if (m_DestroyOnDeplete)
+                Destroy(gameObject);
         }
 
         protected virtual void OnHealthChanged(float health, float delta)

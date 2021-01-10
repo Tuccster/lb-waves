@@ -7,25 +7,26 @@ namespace Lemon
 {
     public class RaycastShooter : MonoBehaviour
     {
-        [Header("RaycastShooter Settings")]
-        public float m_FireCooldown;
-        public float m_MaxDistance;
-        public float m_MaxDamage;
-        public float m_DamageFalloffStartDistance;
-        public float m_DamageFalloffPercentPerUnit;
-        public DamageFalloff m_DamageFalloffType;
+        // [Header("RaycastShooter Settings")]
+        // public float m_FireCooldown;
+        // public float m_MaxDistance;
+        // public float m_MaxDamage;
+        // public float m_DamageFalloffStartDistance;
+        // public float m_DamageFalloffPercentPerUnit;
+        // public DamageFalloff m_DamageFalloffType;
 
-        public enum DamageFalloff { Linear, Exponential }
+        // public enum DamageFalloff { Linear, Exponential }
 
         [Header("RaycastShooter Resources")]
         public Transform m_ShootPoint;
+        public RaycastGun m_GunReference;
 
         private WaitForSeconds m_WaitForSeconds;
         private IEnumerator m_ShootEnumerator;
 
         private void Awake()
         {
-            m_WaitForSeconds = new WaitForSeconds(m_FireCooldown);
+            m_WaitForSeconds = new WaitForSeconds(m_GunReference.fireCooldown);
         }
 
         public virtual void Shoot(Vector3 direction)
@@ -44,8 +45,11 @@ namespace Lemon
             {
                 HealthAttribute healthAtt = hit.transform.GetComponent<HealthAttribute>();
                 if (healthAtt != null)
-                    healthAtt.ApplyHealthDelta(((hit.distance / m_MaxDistance) * m_MaxDamage) * Mathf.Pow(m_DamageFalloffPercentPerUnit, (int)hit.distance));
-
+                {
+                    float baseDamage = ((hit.distance / m_GunReference.maxDistance) * m_GunReference.maxDamage);
+                    float falloff = Mathf.Pow(m_GunReference.falloffPercentPerUnit, (int)hit.distance);
+                    healthAtt.ApplyHealthDelta(baseDamage * falloff);
+                }
                 Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             }
 

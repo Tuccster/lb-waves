@@ -12,6 +12,8 @@ namespace Lemon
         public float fireCooldown;
         public float maxDamage;
         public float maxDistance;
+        public float falloffPercentPerUnit;
+        public float force;
         public bool automatic;
         public enum RaycastGunType { Pistol, Rifle, Shotgun, Sniper, SMG }
         public RaycastGunType gunType;
