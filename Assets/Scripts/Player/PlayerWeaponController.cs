@@ -87,6 +87,8 @@ namespace Lemon
                 {
                     rigidbody.AddForce(direction * gun.force);
                 }
+
+                m_FirstPersonModelController.ExectuteShootVisuals();
             }
             Debug.DrawRay(startPos, direction * hit.distance, Color.yellow, 10);
 

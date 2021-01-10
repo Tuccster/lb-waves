@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: weapon_blicky
   displayName: Blicky
-  fireCooldown: 0.1
+  fireCooldown: 0.05
   maxDamage: 100
   maxDistance: 100
-  falloffPercentPerUnit: 1
+  falloffPercentPerUnit: 1.5
   force: 70
   automatic: 1
   gunType: 0

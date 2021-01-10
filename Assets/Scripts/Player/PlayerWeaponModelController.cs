@@ -12,32 +12,55 @@ namespace Lemon
     public class PlayerWeaponModelController : MonoBehaviour
     {
         [Header("Resources")]
+        public ParticleSystem m_MuzzleFlash;
         public ViewModel[] m_ViewModels;
+        
+        private RaycastGun m_ActiveGun;
+        private int m_ActiveViewModelIndex = 0;
 
         private void Awake()
         {
-            SetViewModel(SetActive.None);
+            SetViewModel(null);
         }
 
         public void SetViewModel(RaycastGun gun)
         {
-            if (gun == null) return;
+            m_ActiveGun = gun;
             for (int i = 0; i < m_ViewModels.Length; i++)
-                m_ViewModels[i].model.SetActive(gun.id == m_ViewModels[i].id); // Enable model if ids match
+            {
+                if (gun?.id == m_ViewModels[i].id)
+                {
+                    m_ViewModels[i].model?.SetActive(true); // Enable model if ids match
+                    m_ActiveViewModelIndex = i;
+                }
+                else
+                    m_ViewModels[i].model?.SetActive(false);
+            }
         }
 
-        public enum SetActive { All, None }
-        public void SetViewModel(SetActive set)
+        public void ExectuteShootVisuals()
         {
-            for (int i = 0; i < m_ViewModels.Length; i++)
-                m_ViewModels[i].model.SetActive(Convert.ToBoolean(set));
+            Transform shootPoint =  m_ViewModels[m_ActiveViewModelIndex].shootPoint;
+            Destroy(Instantiate(m_MuzzleFlash, shootPoint.position, shootPoint.rotation, shootPoint), 1);
+
+            m_ViewModels[m_ActiveViewModelIndex].animator?.Play("shoot");
         }
+
+        public void ExecuteReloadVisuals()
+        {
+
+        }
+
+        // Make ViewModel a MonoBehaviour so that each viewmodel can deal with its own information, rather than dealing with a messy
+        // array on this script. 
 
         [System.Serializable]
         public class ViewModel
         {
             public string id;
             public GameObject model;
+            public Transform shootPoint;
+            public Animator animator;
         }
     }
 }
