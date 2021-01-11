@@ -29,6 +29,10 @@ namespace Lemon
         private void Awake()
         {
             m_PlayerCamera = Camera.main; // May have to aquire in Start()
+        }
+
+        private void Start()
+        {
             SetActiveGun(m_gun1);
         }
 
@@ -39,6 +43,9 @@ namespace Lemon
                 SetActiveGun(m_gun1);
             else if (Input.GetKeyDown(KeyCode.Alpha2))
                 SetActiveGun(m_gun2);
+
+            if (Input.GetKeyDown(KeyCode.R))
+                m_FirstPersonModelController.ExecuteVisuals(PlayerWeaponModelController.VisualType.Reload);
 
             // TEMP SHOOTING
             bool shootThisFrame = m_gun1.automatic ? Input.GetKey(KeyCode.Mouse0) : Input.GetKeyDown(KeyCode.Mouse0);
@@ -88,7 +95,7 @@ namespace Lemon
                     rigidbody.AddForce(direction * gun.force);
                 }
 
-                m_FirstPersonModelController.ExectuteShootVisuals();
+                m_FirstPersonModelController.ExecuteVisuals(PlayerWeaponModelController.VisualType.Shoot);
             }
             Debug.DrawRay(startPos, direction * hit.distance, Color.yellow, 10);
 

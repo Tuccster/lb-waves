@@ -7,6 +7,7 @@ namespace Lemon
     [CreateAssetMenu(fileName = "RaycastGun", menuName = "Weapons/RaycastGun", order = 1)]
     public class RaycastGun : ScriptableObject
     {
+        [Header("Settings")]
         public string id;
         public string displayName;
         public float fireCooldown;
@@ -20,5 +21,9 @@ namespace Lemon
         public RaycastGunType gunType;
         public enum RaycastGunPurpose { Primary, Secondary }
         public RaycastGunPurpose gunPurpose;
+
+        [Header("Resources")]
+        public AudioClip clipShoot;
+        public AudioClip clipReload;
     }
 }
