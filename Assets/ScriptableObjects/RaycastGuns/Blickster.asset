@@ -14,9 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: weapon_blickster
   displayName: Blickster
-  fireCooldown: 0.25
-  maxDamage: 82
+  fireCooldown: 0.06
+  maxDamage: 60
   maxDistance: 100
-  automatic: 0
+  falloffPercentPerUnit: 1.8
+  force: 34
+  automatic: 1
+  rStrength: 7
+  rFrames: 2
   gunType: 0
   gunPurpose: 1
+  clipPullout: {fileID: 8300000, guid: 02e581718ba368546a99be6ed6df8fdb, type: 3}
+  clipShoot: {fileID: 8300000, guid: 43ee807fbddd70e4993b02727755d658, type: 3}
+  clipReload: {fileID: 8300000, guid: 5f845abef39476e45b945c2d10ca1372, type: 3}

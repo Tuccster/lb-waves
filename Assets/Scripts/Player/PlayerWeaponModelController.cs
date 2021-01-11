@@ -18,7 +18,7 @@ namespace Lemon
 
         private RaycastGun m_ActiveGun;
         private int m_ActiveViewModelIndex = 0;
-        public enum VisualType { Shoot, Reload };
+        public enum VisualType { Pullout, Shoot, Reload };
 
         private void Awake()
         {
@@ -39,20 +39,30 @@ namespace Lemon
                 else
                     m_ViewModels[i].m_ViewModel?.SetActive(false);
             }
+            ExecuteVisuals(VisualType.Pullout);
         }
 
         public void ExecuteVisuals(VisualType vType)
         {
+            ViewModelController curViewModel = m_ViewModels[m_ActiveViewModelIndex];
+
             switch (vType)
             {
+                case VisualType.Pullout:
+                    //curViewModel.m_Animator?.Play("pullout", 0, 0);
+                    curViewModel.m_AudioSource.PlayOneShot(m_ActiveGun.clipReload);
+                    break;
+
                 case VisualType.Shoot:
-                    Transform shootPoint = m_ViewModels[m_ActiveViewModelIndex].m_ShootPoint;
-                    Destroy(Instantiate(m_MuzzleFlash, shootPoint.position, shootPoint.rotation, shootPoint), 1);
-                    m_ViewModels[m_ActiveViewModelIndex].m_Animator?.Play("shoot", 0, 0);
+                    Transform shootPoint = curViewModel.m_ShootPoint;
+                    Destroy(Instantiate(m_MuzzleFlash, shootPoint.position, shootPoint.rotation, shootPoint), 0.5f);
+                    curViewModel.m_Animator?.Play("shoot", 0, 0);
+                    curViewModel.m_AudioSource?.PlayOneShot(m_ActiveGun.clipShoot);
                     break;
 
                 case VisualType.Reload:
-                    m_ViewModels[m_ActiveViewModelIndex].m_Animator?.Play("reload", 0, 0);
+                    curViewModel.m_Animator?.Play("reload", 0, 0);
+                    curViewModel.m_AudioSource?.PlayOneShot(m_ActiveGun.clipReload);
                     break;
             }
         }

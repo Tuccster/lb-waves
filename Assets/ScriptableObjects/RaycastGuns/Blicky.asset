@@ -14,11 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: weapon_blicky
   displayName: Blicky
-  fireCooldown: 0.1
+  fireCooldown: 0.15
   maxDamage: 100
   maxDistance: 100
   falloffPercentPerUnit: 1.5
   force: 70
   automatic: 1
+  rStrength: 10
+  rFrames: 2
   gunType: 0
   gunPurpose: 0
+  clipPullout: {fileID: 8300000, guid: b70e5ec0038940247968d9d09e0a17fb, type: 3}
+  clipShoot: {fileID: 8300000, guid: 9cd855523e1cac74eb00882c056c6b83, type: 3}
+  clipReload: {fileID: 8300000, guid: 62babbcf8fb42ec419bf20c813be6d7d, type: 3}

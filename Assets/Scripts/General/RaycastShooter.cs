@@ -26,7 +26,7 @@ namespace Lemon
 
         private void Awake()
         {
-            m_WaitForSeconds = new WaitForSeconds(m_GunReference.fireCooldown);
+            m_WaitForSeconds = new WaitForSeconds(m_GunReference.roundPerMinute);
         }
 
         public virtual void Shoot(Vector3 direction)

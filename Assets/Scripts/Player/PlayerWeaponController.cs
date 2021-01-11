@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Lemon.Attributes;
+using CMF;
 
 namespace Lemon
 {
     /*
-        This class in used for the actual shooting mechanics as well as calling methods to update the
-        PlayerWeaponModelController's models.
+        This class in used for the actual shooting mechanics as well as calling methods on
+        m_FirstPersonModelController's to update models and run visuals.
     */
 
     public class PlayerWeaponController : MonoBehaviour
@@ -17,11 +18,14 @@ namespace Lemon
 
         [Header("Resources")]
         public PlayerWeaponModelController m_FirstPersonModelController;
-        public RaycastGun m_gun1;
-        public RaycastGun m_gun2;
+        public CameraController m_CameraController;
+        public RaycastGun m_gun1; // TEMP
+        public RaycastGun m_gun2; // TEMP
 
         private WaitForSeconds m_WaitForSeconds;
+        private WaitForFixedUpdate m_WaitForFixedUpdate;
         private IEnumerator m_ShootEnumerator;
+        private IEnumerator m_RecoilEnumerator;
         private Camera m_PlayerCamera;
 
         protected RaycastGun m_ActiveGun;
@@ -29,6 +33,7 @@ namespace Lemon
         private void Awake()
         {
             m_PlayerCamera = Camera.main; // May have to aquire in Start()
+            m_WaitForFixedUpdate = new WaitForFixedUpdate();
         }
 
         private void Start()
@@ -60,16 +65,22 @@ namespace Lemon
         {
             m_ActiveGun = newGun;
             m_FirstPersonModelController.SetViewModel(newGun);
-            m_WaitForSeconds = new WaitForSeconds(newGun.fireCooldown);
+            m_WaitForSeconds = new WaitForSeconds(newGun.roundPerMinute * 0.00027777f);
         }
 
         public void Shoot(Vector3 startPos, Vector3 direction, RaycastGun gun)
         {
+            // Start coroutine for fireing raycast
             if (m_ShootEnumerator == null)
             {
                 m_ShootEnumerator = ShootEnumerator(startPos, direction, gun);
                 StartCoroutine(m_ShootEnumerator);
             }
+
+            // Start coroutine for recoil
+            Vector3 calcTargetPos = m_PlayerCamera.transform.position + m_PlayerCamera.transform.forward + Vector3.up;
+            m_RecoilEnumerator = RecoilEnumerator(calcTargetPos, gun.rFrames, gun.rStrength);
+            StartCoroutine(m_RecoilEnumerator);
         }
 
         private IEnumerator ShootEnumerator(Vector3 startPos, Vector3 direction, RaycastGun gun)
@@ -85,7 +96,6 @@ namespace Lemon
                     float baseDamage = -gun.maxDamage * (hit.distance / gun.maxDistance);
                     float falloff = 1 - (gun.maxDistance / (gun.maxDistance * Mathf.Pow(1 - (gun.falloffPercentPerUnit * 0.01f), (int)hit.distance)));
                     float final = -(gun.maxDamage - (baseDamage * falloff));
-                    Debug.Log(final.ToString("0.0000"));
                     healthAtt.ApplyHealthDelta(final);
                 }
 
@@ -97,10 +107,20 @@ namespace Lemon
 
                 m_FirstPersonModelController.ExecuteVisuals(PlayerWeaponModelController.VisualType.Shoot);
             }
+
             Debug.DrawRay(startPos, direction * hit.distance, Color.yellow, 10);
 
             yield return m_WaitForSeconds;
             m_ShootEnumerator = null;
+        }
+
+        private IEnumerator RecoilEnumerator(Vector3 targetPos, float frames, float strength)
+        {
+            for (int i = 0; i < frames; i++)
+            {
+                yield return m_WaitForFixedUpdate;
+                m_CameraController.RotateTowardPosition(targetPos, strength);
+            }
         }
     }
 }
