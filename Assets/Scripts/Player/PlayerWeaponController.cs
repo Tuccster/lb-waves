@@ -65,7 +65,7 @@ namespace Lemon
         {
             m_ActiveGun = newGun;
             m_FirstPersonModelController.SetViewModel(newGun);
-            m_WaitForSeconds = new WaitForSeconds(newGun.roundPerMinute * 0.00027777f);
+            m_WaitForSeconds = new WaitForSeconds(60 / (float)newGun.roundPerMinute);
         }
 
         public void Shoot(Vector3 startPos, Vector3 direction, RaycastGun gun)
@@ -76,11 +76,6 @@ namespace Lemon
                 m_ShootEnumerator = ShootEnumerator(startPos, direction, gun);
                 StartCoroutine(m_ShootEnumerator);
             }
-
-            // Start coroutine for recoil
-            Vector3 calcTargetPos = m_PlayerCamera.transform.position + m_PlayerCamera.transform.forward + Vector3.up;
-            m_RecoilEnumerator = RecoilEnumerator(calcTargetPos, gun.rFrames, gun.rStrength);
-            StartCoroutine(m_RecoilEnumerator);
         }
 
         private IEnumerator ShootEnumerator(Vector3 startPos, Vector3 direction, RaycastGun gun)
@@ -109,6 +104,11 @@ namespace Lemon
             }
 
             Debug.DrawRay(startPos, direction * hit.distance, Color.yellow, 10);
+
+            // Start coroutine for recoil
+            Vector3 calcTargetPos = m_PlayerCamera.transform.position + m_PlayerCamera.transform.forward + Vector3.up;
+            m_RecoilEnumerator = RecoilEnumerator(calcTargetPos, gun.rFrames, gun.rStrength);
+            StartCoroutine(m_RecoilEnumerator);
 
             yield return m_WaitForSeconds;
             m_ShootEnumerator = null;

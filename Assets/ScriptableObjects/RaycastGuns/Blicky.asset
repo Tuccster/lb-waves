@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: weapon_blicky
   displayName: Blicky
-  fireCooldown: 0.15
+  roundPerMinute: 600
   maxDamage: 100
   maxDistance: 100
   falloffPercentPerUnit: 1.5

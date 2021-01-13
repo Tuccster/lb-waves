@@ -15,7 +15,7 @@ namespace Lemon
         public Transform m_ShootPoint;
         public AudioSource m_AudioSource;
 
-        // Automatically assigned on Awake()
+         // Automatically assigned on Awake()
         [HideInInspector] public GameObject m_ViewModel;
         [HideInInspector] public Animator m_Animator;
 

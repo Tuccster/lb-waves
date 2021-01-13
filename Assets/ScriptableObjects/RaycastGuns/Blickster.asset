@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: weapon_blickster
   displayName: Blickster
-  fireCooldown: 0.06
+  roundPerMinute: 857
   maxDamage: 60
   maxDistance: 100
   falloffPercentPerUnit: 1.8
