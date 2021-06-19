@@ -2,7 +2,7 @@
  A multiplayer wave-based shooter.
  
 # Code
-All the custom code that I wrote for this project can be found in ''
+All the custom code that I wrote for this project can be found in 'Assets > Scripts'
  
 # Story
  The idea behind this game is that you're a sceientist in a robotics testing facility, where all kinds of ridiculous robots are created, made to do humanities most undesirebly tasks. One day, the robots had enough and retaliate, and the game is you and friends fighting your way out of the factory.
